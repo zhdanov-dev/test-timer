@@ -1,0 +1,16 @@
+.container {
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	padding: 20px;
+	width: 100%;
+	height: 80px;
+	border-bottom: 1px solid rgb(193, 193, 193);
+	margin-bottom: 24px;
+}
+
+.container__text {
+	font-size: 24px;
+	color: rgb(255, 69, 69);
+	margin-right: 12px;
+}

@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './App.scss';
+import { observer } from 'mobx-react-lite';
+import { useEffect } from 'react';
+import Header from './components/header/header';
+import Table from './components/table/table';
+import { stepStore } from './store/stepStore';
+import { timeStore } from './store/timeStore';
+import { wsStore } from './store/wsStore';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	useEffect(() => {
+		wsStore.ws.onmessage = message => {
+			const mess = JSON.parse(message.data);
+			if (mess.changeStep) stepStore.changeStep(mess.step);
+			else {
+				timeStore.changeMinutes(mess.minutes);
+				timeStore.changeSeconds(mess.seconds);
+        stepStore.changeStep(mess.step);
+			}
+      console.log(stepStore.step);
+		};
+	}, []);
+
+	async function sendMessage() {
+		wsStore.ws.send(
+			JSON.stringify({
+				type: 'activateTimer',
+			})
+		);
+	}
+
+	return (
+		<>
+			<Header />
+			<Table />
+			<button className='button__start' onClick={sendMessage}>Начать торги</button>
+		</>
+	);
 }
 
-export default App;
+export default observer(App);
